@@ -6,36 +6,40 @@ ENV DEBIAN_FRONTEND noninteractive
 ENV HOME /root
 ENV TERM xterm
 
-# Set the locale
-RUN locale-gen en_US.UTF-8
-ENV LANG en_US.UTF-8
-ENV LANGUAGE en_US:en
-ENV LC_ALL en_US.UTF-8
+# add local files
+ADD src/ /root/
+
+# set ports
+EXPOSE 9777/udp 8080/tcp 3306/tcp
+
+# config volume
+VOLUME /config
 
 # Use baseimage-docker's init system
 CMD ["/sbin/my_init"]
 
-
+# Set the locale
+ENV LANG en_US.UTF-8
+ENV LANGUAGE en_US:en
+ENV LC_ALL en_US.UTF-8
+RUN locale-gen en_US.UTF-8 && \
 
 # Add required files that are local
 
-RUN mkdir -p /root/advancestore && \
+# move files from /root to required places
 mkdir /etc/service/kodi && \
 mkdir /etc/service/mariadb && \
 mkdir -p /config/databases && \
-chown -R nobody:users /config
-ADD src/5071.patch /5071.patch
-ADD src/kodi.sh /etc/service/kodi/run
-ADD src/advancedsettings.xml /advancestore/
-ADD src/media-firstrun.sh /etc/my_init.d/media-firstrun.sh
-ADD src/mariadb.sh /etc/service/mariadb/run
-ADD src/createuser /usr/bin/createuser
-ADD src/createdatabase /usr/bin/createdatabase
-VOLUME /config
+chown -R nobody:users /config && \
+mv root/kodi.sh /etc/service/kodi/run && \
+mv /root/media-firstrun.sh /etc/my_init.d/media-firstrun.sh && \
+mv /root/mariadb.sh /etc/service/mariadb/run && \
+mv /root/createuser /usr/bin/createuser && \
+mv /root/createdatabase /usr/bin/createdatabase && \
 
 
 # Fix a Debianism of the nobody's uid being 65534
-RUN usermod -u 99 nobody && \
+usermod -u 99 nobody && \
 usermod -g 100 nobody && \
 
 # update apt
@@ -61,7 +65,7 @@ echo 'innodb_file_per_table' >> /etc/mysql/conf.d/innodb_file_per_table.cnf && \
 
 git clone https://github.com/xbmc/xbmc.git && \
 cd xbmc && \
-mv /5071.patch . && \
+mv /root/5071.patch . && \
 git checkout 14.1-Helix && \
 git apply 5071.patch && \
 
@@ -132,5 +136,4 @@ chmod +x /usr/bin/createdatabase && \
 
 rm -rf /var/lib/apt/lists /usr/share/man /usr/share/doc
 
-# set ports
-EXPOSE 9777/udp 8080/tcp 3306/tcp
+
