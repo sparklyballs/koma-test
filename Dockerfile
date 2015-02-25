@@ -126,7 +126,6 @@ rm -rf xbmc && \
 # fix up permissions for startup files etc...
 
 chown -R nobody:users /opt/kodi-server && \
-chown -R nobody:users /advancestore && \
 chmod +x /etc/service/kodi/run && \
 chmod +x /etc/my_init.d/media-firstrun.sh && \
 chmod +x /etc/service/mariadb/run && \
