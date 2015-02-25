@@ -16,6 +16,6 @@ echo "using existing advancedsettings.xml"
 chown -R nobody:users /opt/kodi-server
 else
 echo "creating advancedsettings.xml"
-cp /advancestore/advancedsettings.xml /opt/kodi-server/share/kodi/portable_data/userdata/advancedsettings.xml
+cp /root/advancedsettings.xml /opt/kodi-server/share/kodi/portable_data/userdata/advancedsettings.xml
 chown -R nobody:users /opt/kodi-server
 fi
